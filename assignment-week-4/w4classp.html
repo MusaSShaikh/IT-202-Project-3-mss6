@@ -6,24 +6,23 @@
     <title>UCID Validation Form</title>
     <script>
         // List of valid UCIDs
-        const validUCIDs = ["abc123", "xyz", "john1", "musa007", "student9"];
+        const validUCIDs = ["mss6", "professormaura", "arabic101", "mustard007", "student"];
 
         function validateUCID() {
-            // Get the input value
+            // input
             const ucidInput = document.getElementById("ucid").value.trim();
 
-            // Regular expression for letters followed by 0-3 digits
+            // Regex :D
             const ucidPattern = /^[a-zA-Z]+[0-9]{0,3}$/;
 
             if (!ucidPattern.test(ucidInput)) {
-                // If format is invalid
-                alert("UCID DOES NOT CONFORM TO VALID FORMAT");
+                // format is invalid (its cooked)
+                alert("UCID DOES NOT CONFORM TO VALID FORMAT! RE-ENTER");
             } else if (validUCIDs.includes(ucidInput)) {
-                // If format is valid and UCID is found
+                // the format is valid UCID is found
                 alert("VALID UCID FORMAT AND UCID FOUND");
             } else {
-                // If format is valid but UCID not found
-                alert("VALID UCID FORMAT BUT INVALID UCID");
+                alert("VALID UCID FORMAT BUT INVALID UCID!");
             }
         }
     </script>
@@ -36,7 +35,7 @@
                id="ucid" 
                name="ucid" 
                placeholder="Enter your UCID" 
-               title="UCID must be letters followed by 0-3 digits">
+               title="A UCID is a sequence of letters followed by zero to three digits">
         <br><br>
         <button type="submit">Submit</button>
     </form>
