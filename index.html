@@ -2,43 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UCID Validation Form</title>
-    <script>
-        // List of valid UCIDs
-        const validUCIDs = ["abc123", "xyz", "john1", "musa007", "student9"];
-
-        function validateUCID() {
-            // Get the input value
-            const ucidInput = document.getElementById("ucid").value.trim();
-
-            // Regular expression for letters followed by 0-3 digits
-            const ucidPattern = /^[a-zA-Z]+[0-9]{0,3}$/;
-
-            if (!ucidPattern.test(ucidInput)) {
-                // If format is invalid
-                alert("UCID DOES NOT CONFORM TO VALID FORMAT");
-            } else if (validUCIDs.includes(ucidInput)) {
-                // If format is valid and UCID is found
-                alert("VALID UCID FORMAT AND UCID FOUND");
-            } else {
-                // If format is valid but UCID not found
-                alert("VALID UCID FORMAT BUT INVALID UCID");
-            }
-        }
-    </script>
+    <title>Culinary Connoisseurs</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="main1.js"></script>
 </head>
 <body>
-    <h2>UCID Validation Form</h2>
-    <form onsubmit="event.preventDefault(); validateUCID();">
-        <label for="ucid">Enter UCID:</label><br>
-        <input type="text" 
-               id="ucid" 
-               name="ucid" 
-               placeholder="Enter your UCID" 
-               title="UCID must be letters followed by 0-3 digits">
-        <br><br>
-        <button type="submit">Submit</button>
-    </form>
+    <div class="form-container">
+        <h1>Culinary Connoisseurs</h1>
+        <form id="catererForm" onsubmit="return validate();">
+            
+            <label for="fname">Caterer’s First Name: (REQUIRED)</label>
+            <input type="text" id="fname" name="fname" placeholder="Example: John">
+            <span class="req">REQUIRED</span>
+
+            <label for="lname">Caterer’s Last Name: (REQUIRED)</label>
+            <input type="text" id="lname" name="lname" placeholder="Example: Doe">
+            <span class="req">REQUIRED</span>
+
+            <label for="password">Caterer’s Password: (REQUIRED)</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" placeholder="Example: $CC@1">
+                <span id="togglePwd" class="toggle-icon">👁️</span>
+            </div>
+            <span class="req">REQUIRED</span>
+
+            <label for="idnum">Caterer’s ID #: (REQUIRED)</label>
+            <input type="text" id="idnum" name="idnum" placeholder="Example: 2468">
+            <span class="req">REQUIRED</span>
+
+            <label for="phone">Caterer’s  Phone #: (REQUIRED)</label>
+            <input type="text" id="phone" name="phone" placeholder="Example: 123-456-7892">
+            <span class="req">REQUIRED</span>
+
+            <label for="email">Caterer’s Email:</label>
+            <input type="text" id="email" name="email" placeholder="Example: john@CC.com">
+            <span class="req">REQUIRED</span>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="confirmEmail" name="confirmEmail">
+                Check the box to request an email confirmation:
+            </label>
+
+            <label for="transaction">Select a Transaction:</label>
+            <select id="transaction" name="transaction">
+                <option value="Search A Caterer's Accounts">Search A Caterer’s Accounts</option>
+                <option value="Book a Client's Catering Event">Book a Client’s Catering Event</option>
+                <option value="Cancel A Client's Catering Event">Cancel A Client’s Catering Event</option>
+                <option value="Request Additional Catering Services">Request Add-On Catering Services</option>
+                <option value="Update Additional Catering Services">Update Add-On Catering Services</option>
+                <option value="Create A New Client">Create A New Client Account</option>
+            </select>
+
+            <div class="buttons">
+                <button type="submit">Submit</button>
+                <button type="reset" onclick="resetForm()">Reset</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
