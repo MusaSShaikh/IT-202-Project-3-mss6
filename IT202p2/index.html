@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Culinary Connoisseurs</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="main.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Culinary Connoisseurs — Login</h1>
+
+    <!-- LOGIN: no navbar here -->
+    <form id="loginForm">
+      <label for="fname">Caterer’s First Name:</label>
+      <input id="fname" name="fname" type="text" placeholder="Example: A">
+
+      <label for="lname">Caterer’s Last Name:</label>
+      <input id="lname" name="lname" type="text" placeholder="Example: R">
+
+      <label for="password">Caterer’s Password:</label>
+      <div style="position:relative;">
+        <input id="password" name="password" type="password" placeholder="Example: #A3b">
+        <button id="togglePwd" type="button" style="position:absolute; right:4px; top:4px;">👁️</button>
+      </div>
+
+      <label for="idnum">Caterer’s ID # (4 digits):</label>
+      <input id="idnum" name="idnum" type="text" placeholder="Example: 1101">
+
+      <label for="phone">Caterer’s Phone # (555-555-5555 ext 555):</label>
+      <input id="phone" name="phone" type="text" placeholder="111-111-1111 ext 111">
+
+      <label for="email">Caterer’s Email:</label>
+      <input id="email" name="email" type="text" placeholder="amina@example.com">
+
+      <label style="margin-top:8px;">
+        <input id="confirmEmail" name="confirmEmail" type="checkbox">
+        Use Caterer Email for login verification
+      </label>
+
+      <label for="transaction">Select a transaction:</label>
+      <select id="transaction" name="transaction">
+        <option value="search">Search A Caterer’s Account</option>
+        <option value="book">Book a Client's Catering Event</option>
+        <option value="cancel">Cancel A Client's Catering Event</option>
+        <option value="request">Request Additional Catering Services</option>
+        <option value="update">Update Additional Catering Services</option>
+        <option value="create">Create A New Client Account</option>
+      </select>
+
+      <div class="actions">
+        <button id="submitBtn" type="submit">Submit</button>
+        <button id="resetBtn" type="reset">Reset</button>
+      </div>
+    </form>
+
+    <!-- APP: shown after successful login -->
+    <div id="app" style="display:none;">
+      <div class="navbar" id="tabBar">
+        <div class="tab active" data-tab="search">Search</div>
+        <div class="tab" data-tab="book">Book</div>
+        <div class="tab" data-tab="cancel">Cancel</div>
+        <div class="tab" data-tab="request">Request</div>
+        <div class="tab" data-tab="update">Update</div>
+        <div class="tab" data-tab="create">Create</div>
+        <div style="margin-left:auto;">
+          <span id="loggedAs"></span>
+          <button id="logoutBtn" type="button" style="margin-left:8px;">Logout</button>
+        </div>
+      </div>
+
+      <div id="flash"></div>
+
+      <!-- SEARCH -->
+      <div id="panel-search" class="panel active">
+        <h2>Search A Caterer’s Account</h2>
+        <div id="searchPanel"></div>
+      </div>
+
+      <!-- BOOK -->
+      <div id="panel-book" class="panel">
+        <h2>Book a Client's Catering Event</h2>
+        <form id="bookVerifyForm">
+          <label>Enter Client ID to verify (existing client):</label>
+          <input id="book_client_id" name="book_client_id" type="text" placeholder="Client ID (e.g., 201)">
+          <div class="actions">
+            <button id="bookVerifyBtn" type="button">Verify Client</button>
+          </div>
+        </form>
+
+        <div id="bookFormWrap" style="display:none; margin-top:12px;">
+          <form id="bookForm">
+            <label>Client ID (readonly)</label>
+            <input id="book_client_id_confirm" name="book_client_id_confirm" readonly>
+
+            <label>Event Date</label>
+            <input id="book_event_date" name="book_event_date" type="date">
+
+            <label>Food Order</label>
+            <input id="book_food_order" name="book_food_order" type="text" placeholder="E.g., Vegetarian Mezza">
+
+            <div class="actions">
+              <button id="bookSubmitBtn" type="button">Book Event</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- CANCEL -->
+      <div id="panel-cancel" class="panel">
+        <h2>Cancel a Catering Event</h2>
+        <form id="cancelForm">
+          <label>Catering ID</label>
+          <input id="cancel_catering_id" name="cancel_catering_id" type="text" placeholder="Example: 401">
+          <div class="actions">
+            <button id="cancelCheckBtn" type="button">Check Booking</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- REQUEST -->
+      <div id="panel-request" class="panel">
+        <h2>Request Additional Catering Services</h2>
+        <form id="requestCheckForm">
+          <label>Catering ID (must exist)</label>
+          <input id="request_catering_id" name="request_catering_id" type="text">
+        </form>
+        <div style="margin-top:8px;">
+          <small>Tip: Enter Catering ID and submit below.</small>
+        </div>
+
+        <div id="requestFormWrap" style="margin-top:12px;">
+          <form id="requestForm">
+            <label>Supply Type</label>
+            <input id="supply_type" name="supply_type" type="text">
+            <label>Quantity</label>
+            <input id="supply_qty" name="supply_qty" type="number" min="1" value="1">
+            <div class="actions">
+              <button id="requestSubmitBtn" type="button">Request Services</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- UPDATE -->
+      <div id="panel-update" class="panel">
+        <h2>Update Additional Catering Services</h2>
+        <form id="updateCheckForm">
+          <label>Catering ID</label>
+          <input id="update_catering_id" name="update_catering_id" type="text">
+        </form>
+        <div style="margin-top:8px;">
+          <small>Tip: Specify the exact Supply Type to update.</small>
+        </div>
+
+        <div id="updateFormWrap" style="margin-top:12px;">
+          <form id="updateForm">
+            <label>Supply Type (existing)</label>
+            <input id="update_supply_type" name="update_supply_type" type="text">
+            <label>Additional Quantity to Add</label>
+            <input id="update_supply_qty" name="update_supply_qty" type="number" min="1" value="1">
+            <div class="actions">
+              <button id="updateSubmitBtn" type="button">Update Services</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- CREATE -->
+      <div id="panel-create" class="panel">
+        <h2>Create a New Client Account</h2>
+        <form id="createClientForm">
+          <label>Client First Name</label>
+          <input id="create_fname" name="create_fname" type="text">
+          <label>Client Last Name</label>
+          <input id="create_lname" name="create_lname" type="text">
+          <label>Client ID (4 digits)</label>
+          <input id="create_client_id" name="create_client_id" type="text">
+          <div class="actions">
+            <button id="createClientBtn" type="button">Create Client</button>
+          </div>
+        </form>
+
+        <div id="createInfoWrap" style="display:none; margin-top:12px;">
+          <h3>Client Personal Information</h3>
+          <form id="createClientInfoForm">
+            <label>Street Number</label><input id="ci_street_number" name="ci_street_number" type="text">
+            <label>Street Name</label><input id="ci_street_name" name="ci_street_name" type="text">
+            <label>City</label><input id="ci_city" name="ci_city" type="text">
+            <label>State (2 letters)</label><input id="ci_state" name="ci_state" type="text" maxlength="2">
+            <label>Zip</label><input id="ci_zip" name="ci_zip" type="text">
+            <label>Phone</label><input id="ci_phone" name="ci_phone" type="text">
+            <div class="actions">
+              <button id="createClientInfoBtn" type="button">Save Client Info</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?php header('Content-Type: application/json; charset=utf-8');session_start();require_once __DIR__.'/connect.php';
+function respond($d){echo json_encode($d);exit;}function require_login(){if(!isset($_SESSION['caterer_id']))respond(['success'=>false,'message'=>'Not authenticated']);}
+function g($k){return isset($_POST[$k])?trim($_POST[$k]):'';} $action=g('action');
+
+if($action==='verify'){ $fname=g('fname');$lname=g('lname');$password=g('password');$idnum=g('idnum');$phone=g('phone');$email=g('email');$confirm=g('confirmEmail');$transaction=g('transaction');
+if($confirm==='1'){$sql="SELECT caterer_id,first_name,last_name FROM Caterer WHERE email=? AND first_name=? AND last_name=? AND phone=? AND password=?";$stmt=mysqli_prepare($con,$sql);mysqli_stmt_bind_param($stmt,"sssss",$email,$fname,$lname,$phone,$password);}
+else{$sql="SELECT caterer_id,first_name,last_name FROM Caterer WHERE caterer_id=? AND first_name=? AND last_name=? AND phone=? AND password=?";$stmt=mysqli_prepare($con,$sql);mysqli_stmt_bind_param($stmt,"sssss",$idnum,$fname,$lname,$phone,$password);}
+mysqli_stmt_execute($stmt);mysqli_stmt_bind_result($stmt,$cid,$cfname,$clname);if(mysqli_stmt_fetch($stmt)){$_SESSION['caterer_id']=$cid;$_SESSION['caterer_name']=$cfname." ".$clname;respond(['success'=>true,'caterer_id'=>$cid,'caterer_name'=>$_SESSION['caterer_name'],'transaction'=>$transaction]);}
+respond(['success'=>false,'message'=>'Verification failed']);}
+
+if($action==='search'){require_login();$cid=$_SESSION['caterer_id'];$sql="SELECT cat.first_name,cat.last_name,cat.caterer_id,cat.phone,cat.email,cl.first_name,cl.last_name,cl.client_id,pi.street_number,pi.street_name,pi.city,pi.state,pi.zip,pi.phone AS client_phone,ci.catering_id,ci.event_date,ci.food_order,s.supply_type,s.quantity FROM Client cl JOIN Caterer cat ON cl.caterer_id=cat.caterer_id LEFT JOIN ClientPersonalInfo pi ON pi.client_id=cl.client_id LEFT JOIN ClientCateringInfo ci ON ci.client_id=cl.client_id LEFT JOIN AdditionalSupplies s ON s.catering_id=ci.catering_id WHERE cat.caterer_id=? ORDER BY ci.event_date DESC,s.supply_type ASC";
+$stmt=mysqli_prepare($con,$sql);mysqli_stmt_bind_param($stmt,"s",$cid);mysqli_stmt_execute($stmt);mysqli_stmt_bind_result($stmt,$cf,$cl,$cid2,$cphone,$cemail,$clf,$cll,$clid,$sn,$sname,$city,$state,$zip,$cphone2,$catid,$ed,$fo,$stype,$qty);
+$html='<table><thead><tr><th>Caterer First</th><th>Caterer Last</th><th>Caterer ID</th><th>Caterer Phone</th><th>Caterer Email</th><th>Client First</th><th>Client Last</th><th>Client ID</th><th>Street #</th><th>Street Name</th><th>City</th><th>State</th><th>Zip</th><th>Client Phone</th><th>Catering ID</th><th>Event Date</th><th>Food Required</th><th>Additional Item</th><th>Quantity</th></tr></thead><tbody>';
+$f=false;while(mysqli_stmt_fetch($stmt)){$f=true;$html.="<tr><td>$cf</td><td>$cl</td><td>$cid2</td><td>$cphone</td><td>$cemail</td><td>$clf</td><td>$cll</td><td>$clid</td><td>$sn</td><td>$sname</td><td>$city</td><td>$state</td><td>$zip</td><td>$cphone2</td><td>$catid</td><td>$ed</td><td>$fo</td><td>$stype</td><td>$qty</td></tr>";}
+if(!$f)$html.='<tr><td colspan="19">No records found.</td></tr>'; $html.='</tbody></table>';respond(['success'=>true,'html'=>$html]);}
+
+if($action==='book_check_client'){require_login();$cid=g('client_id');$stmt=mysqli_prepare($con,"SELECT first_name,last_name FROM Client WHERE client_id=?");mysqli_stmt_bind_param($stmt,"s",$cid);mysqli_stmt_execute($stmt);mysqli_stmt_bind_result($stmt,$fn,$ln);if(mysqli_stmt_fetch($stmt))respond(['success'=>true,'client_name'=>$fn." ".$ln]);respond(['success'=>false,'message'=>'Client does not exist']);}
+
+if($action==='book_complete'){require_login();$client=g('client_id');$date=g('event_date');$food=g('food_order');if(!$client||!$date||!$food)respond(['success'=>false,'message'=>'Missing fields']);$catering_id=random_int(100,9999);$stmt=mysqli_prepare($con,"INSERT INTO ClientCateringInfo (catering_id,client_id,event_date,food_order) VALUES (?,?,?,?)");mysqli_stmt_bind_param($stmt,"iiss",$catering_id,$client,$date,$food);if(mysqli_stmt_execute($stmt))respond(['success'=>true,'catering_id'=>$catering_id]);respond(['success'=>false,'message'=>'Booking failed']);}
+
+if($action==='cancel_check'){require_login();$cid=g('catering_id');$stmt=mysqli_prepare($con,"SELECT ci.client_id,cl.caterer_id FROM ClientCateringInfo ci JOIN Client cl ON ci.client_id=cl.client_id WHERE ci.catering_id=?");mysqli_stmt_bind_param($stmt,"i",$cid);mysqli_stmt_execute($stmt);mysqli_stmt_bind_result($stmt,$client,$cat);if(mysqli_stmt_fetch($stmt))respond(['success'=>true,'client_id'=>$client,'caterer_id'=>$cat]);respond(['success'=>false,'message'=>'Catering ID not found']);}
+
+if($action==='cancel_confirm'){require_login();$cid=intval(g('catering_id'));mysqli_query($con,"DELETE FROM AdditionalSupplies WHERE catering_id=$cid");mysqli_query($con,"DELETE FROM ClientCateringInfo WHERE catering_id=$cid");respond(['success'=>true]);}
+
+if($action==='request_submit'){require_login();$cid=g('catering_id');$type=g('supply_type');$qty=intval(g('quantity'));if(!$cid||!$type)respond(['failure'=>true]);}
